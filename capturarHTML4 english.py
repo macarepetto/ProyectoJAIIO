@@ -28,7 +28,7 @@ es = Elasticsearch(
 
 
 def extract_text_from_html(html_content):
-    """Extrae texto, segmenta y genera embeddings."""
+    """Extracts text, segments y generates embeddings."""
 
     soup = BeautifulSoup(html_content, 'html.parser')
     text = ' '.join(soup.stripped_strings)
@@ -41,7 +41,7 @@ def extract_text_from_html(html_content):
 
 
 def create_faiss_index(embeddings):
-    """Crea un índice FAISS."""
+    """Create an índex in FAISS."""
 
     dimension = embeddings.shape[1]
     nlist = min(10, len(embeddings))  # Ajuste dinámico de nlist
@@ -53,14 +53,14 @@ def create_faiss_index(embeddings):
 
 
 def search_faiss_index(index, query_embedding, k=10):
-    """Busca en el índice FAISS."""
+    """Search index in FAISS."""
 
     distances, indices = index.search(np.array([query_embedding]), k)
     return distances[0], indices[0]
 
 
 def create_elasticsearch_index(index_name, documents):
-    """Crea un índice en Elasticsearch."""
+    """Creates an index in Elasticsearch."""
 
     if not es.indices.exists(index=index_name):
         mapping = {"properties": {"content": {"type": "text"}}}
@@ -70,7 +70,7 @@ def create_elasticsearch_index(index_name, documents):
 
 
 def search_elasticsearch_index(index_name, query, size=10):
-    """Busca en Elasticsearch."""
+    """Search in Elasticsearch."""
 
     body = {"query": {"match": {"content": query}}, "size": size}
     res = es.search(index=index_name, body=body)
@@ -106,13 +106,13 @@ def process_urls(urls):
     return all_text, all_paragraphs, all_sentences, all_sentence_embeddings
 
 
-# 1. Definir las URLs a procesar
+# Definir las URLs a procesar
 urls = ["https://ipt.gbif.org/manual/en/ipt/latest/overview",
         "https://ipt.gbif.org/manual/en/ipt/latest/home"]
     # ... Agrega todas las URLs que necesites procesar
 
 
-# 2. Extraer datos y generar embeddings
+# Extraer datos y generar embeddings
 (
     all_text,
     all_paragraphs,
@@ -124,7 +124,7 @@ urls = ["https://ipt.gbif.org/manual/en/ipt/latest/overview",
 print(f"\nTotal paragraphs extracted: {len(all_paragraphs)}")
 print(f"Total sentences extracted: {len(all_sentences)}\n")
 
-# 3. Crear índices de búsqueda
+# Crear índices de búsqueda
 # Crear índice FAISS
 faiss_index = create_faiss_index(np.array(all_sentence_embeddings))
 
@@ -132,7 +132,7 @@ faiss_index = create_faiss_index(np.array(all_sentence_embeddings))
 create_elasticsearch_index("mi_indice", all_paragraphs)
 
 
-# 4. Implementar la función de búsqueda combinada (ejemplo)
+#Implementar la función de búsqueda combinada (ejemplo)
 def combined_search(
     query,
     faiss_index,
@@ -220,11 +220,11 @@ def precision_at_k(results, relevant_texts, k=5):
     return hits / k
 
 
-# Determinar relevancia (debes hacer esto manualmente)
+# Determinar relevancia
 relevant_texts = {
     "To learn more, see the information in the section \"Editing an Existing Resource\" in the \"Resource Management\" menu.",
     "The next step is to proceed with configuring each shared resource."
-}  # Ajusta esto a tus documentos relevantes
+}  # Ajustae esto a los documentos relevantes
 
 
 precision = precision_at_k(resultados, relevant_texts)
